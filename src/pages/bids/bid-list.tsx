@@ -50,6 +50,7 @@ export function BidList() {
   const { data, isLoading } = useQuery({
     queryKey: ['bids', filters.company, filters.year],
     queryFn: () => getBids(),
+    enabled: !!filters.city
   })
 
   const situationStyle: Record<string, string> = {
@@ -142,46 +143,51 @@ export function BidList() {
             </div>
           </form>
 
-          <div className="rounded-sm border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-center">Número</TableHead>
-                  <TableHead>Nome</TableHead>
-                  <TableHead className="text-center">Situação</TableHead>
-                  <TableHead className="text-center">Valor</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead className="flex justify-center items-center">
-                    <Ellipsis className="size-4" />
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-
-              <TableBody>
-                {data?.map((bid) => (
-                  <TableRow key={bid.NLICITACAO} className="cursor-pointer">
-                    <TableCell className="py-3 text-center">{bid.NLICITACAO || "-"}</TableCell>
-                    <TableCell className="py-3">{bid.LICIT || "-"}</TableCell>
-                    <TableCell className="py-3">
-                      <p className={`w-full text-center px-2 py-1 rounded-md text-xs font-medium ${situationStyle[bid.SITUACAO.trim().toLocaleLowerCase()] || ""}`}>
-                        {bid.SITUACAO.trim() || "-"}
-                      </p>
-                    </TableCell>
-                    <TableCell className="py-3 text-center">{formatCurrency(bid.VALOR)}</TableCell>
-                    <TableCell className="py-3">{bid.DATAE || "-"}</TableCell>
-                    <TableCell className="py-3 flex justify-center">
-                      <Button variant="ghost">
-                        <Eye className="size-4" />
-                      </Button>
-                    </TableCell>
+          {filters.city ? (
+            <div className="rounded-sm border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-center">Número</TableHead>
+                    <TableHead>Nome</TableHead>
+                    <TableHead className="text-center">Situação</TableHead>
+                    <TableHead className="text-center">Valor</TableHead>
+                    <TableHead>Data</TableHead>
+                    <TableHead className="flex justify-center items-center">
+                      <Ellipsis className="size-4" />
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+
+                <TableBody>
+                  {data?.map((bid) => (
+                    <TableRow key={bid.NLICITACAO} className="cursor-pointer">
+                      <TableCell className="py-3 text-center">{bid.NLICITACAO || "-"}</TableCell>
+                      <TableCell className="py-3">{bid.LICIT || "-"}</TableCell>
+                      <TableCell className="py-3">
+                        <p className={`w-full text-center px-2 py-1 rounded-md text-xs font-medium ${situationStyle[bid.SITUACAO.trim().toLocaleLowerCase()] || ""}`}>
+                          {bid.SITUACAO.trim() || "-"}
+                        </p>
+                      </TableCell>
+                      <TableCell className="py-3 text-center">{formatCurrency(bid.VALOR)}</TableCell>
+                      <TableCell className="py-3">{bid.DATAE || "-"}</TableCell>
+                      <TableCell className="py-3 flex justify-center">
+                        <Button variant="ghost">
+                          <Eye className="size-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="border rounded-sm p-4">
+              <p className="text-sm text-muted-foreground text-center">Selecione uma <strong>cidade</strong> para buscar as licitações</p>
+            </div>
+          )}
         </div >
-      )
-      }
+      )}
     </div >
   )
 }
