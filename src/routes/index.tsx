@@ -1,6 +1,6 @@
 import { DefaultLayout } from '@/layout/default-layout'
 import { Home } from '@/pages/home'
-import { Licitacoes } from '@/pages/licitacoes'
+import { Bids } from '@/pages/bids'
 import { NotFound } from '@/pages/not-found'
 import { createBrowserRouter } from 'react-router-dom'
 
@@ -8,18 +8,18 @@ import { createBrowserRouter } from 'react-router-dom'
 export const router = createBrowserRouter([
   {
     path: '/',
-    element:(
+    element: (
       <DefaultLayout />
     ),
     children: [
       { path: '', element: <Home /> },
-      { path: 'licitacoes', element: <Licitacoes/>  } 
+      { path: 'licitacoes', element: <Bids /> }
     ]
   },
 
   {
     path: '*',
-    element:(
+    element: (
       <NotFound />
     )
   }

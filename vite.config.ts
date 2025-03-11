@@ -12,10 +12,15 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': {
+      '/jaborandi': {
         target: 'http://45.172.145.250:8079',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/jaborandi/, ''),
+      },
+      '/araminas': {
+        target: 'https://araminasp.dcfiorilli.com.br:879',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/araminas/, ''),
       },
     },
   },
