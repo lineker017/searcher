@@ -10,8 +10,6 @@
   font-family: "Poppins", sans-serif;
 }
 
-
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -40,6 +38,7 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -68,13 +67,49 @@
   }
 }
 
-
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+
+  /* Scrollbar light */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f8fafc;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
+
+  /* Scrollbar dark */
+  .dark ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    background: #0f172a;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: #1e293b;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
   }
 }
