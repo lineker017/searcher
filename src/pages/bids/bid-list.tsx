@@ -1,9 +1,6 @@
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from "@/components/ui/table"
 import { getBids } from "@/http/bids/get-bids"
 import { useQuery } from "@tanstack/react-query"
-import { Ellipsis, Eye, LoaderCircle } from "lucide-react"
+import { LoaderCircle } from "lucide-react"
 import {
   Select,
   SelectContent,
@@ -17,8 +14,7 @@ import { CITIES } from "./constants"
 import { useFiltersStore } from "@/stores/use-filters-store"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { useEffect } from "react"
-import { formatCurrency } from "@/utils/format-currency"
-import { Button } from "@/components/ui/button"
+import { Bid } from "./bid"
 
 export function BidList() {
   const { filters, setFilters, setCity } = useFiltersStore()
@@ -53,14 +49,7 @@ export function BidList() {
     enabled: !!filters.city
   })
 
-  const situationStyle: Record<string, string> = {
-    'em andamento': "bg-yellow-300 text-yellow-800",
-    homologada: "bg-green-300 text-green-800",
-    revogada: "bg-red-300 text-red-800",
-    classificada: "bg-red-300 text-red-800",
-    encerrada: "bg-gray-300 text-gray-800",
-  }
-
+  const city = CITIES.find((city) => city.value === filters.city)?.label
   return (
     <div>
       {isLoading ? (
@@ -83,36 +72,6 @@ export function BidList() {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-
-            <div className="col-span-2">
-              <Label>Ano</Label>
-              <Select
-                value={filters.year}
-                onValueChange={(value) => setFilters({ year: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2025">2025</SelectItem>
-                  <SelectItem value="2024">2024</SelectItem>
-                  <SelectItem value="2023">2023</SelectItem>
-                  <SelectItem value="2022">2022</SelectItem>
-                  <SelectItem value="2021">2021</SelectItem>
-                  <SelectItem value="2020">2020</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="col-span-3">
-              <Label>Nome</Label>
-              <Input
-                placeholder="Filtrar por nome"
-                value={filters.name}
-                onChange={(e) => setFilters({ name: e.target.value })}
-              />
             </div>
 
             <div className="col-span-2">
@@ -145,42 +104,10 @@ export function BidList() {
           </form>
 
           {filters.city ? (
-            <div className="rounded-sm border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Número</TableHead>
-                    <TableHead>Nome</TableHead>
-                    <TableHead className="text-center">Situação</TableHead>
-                    <TableHead className="text-center">Valor</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead className="flex justify-center items-center">
-                      <Ellipsis className="size-4" />
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                  {data?.map((bid) => (
-                    <TableRow key={bid.NLICITACAO} className="cursor-pointer">
-                      <TableCell className="py-3 text-center">{bid.NLICITACAO || "-"}</TableCell>
-                      <TableCell className="py-3">{bid.LICIT || "-"}</TableCell>
-                      <TableCell className="py-3">
-                        <p className={`w-full text-center px-2 py-1 rounded-md text-xs font-medium ${situationStyle[bid.SITUACAO.trim().toLocaleLowerCase()] || ""}`}>
-                          {bid.SITUACAO.trim() || "-"}
-                        </p>
-                      </TableCell>
-                      <TableCell className="py-3 text-center">{formatCurrency(bid.VALOR)}</TableCell>
-                      <TableCell className="py-3">{bid.DATAE || "-"}</TableCell>
-                      <TableCell className="py-3 flex justify-center">
-                        <Button variant="ghost">
-                          <Eye className="size-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <div className="space-y-8">
+              {data?.map((bid) => (
+                <Bid key={bid.PROCLICITACAO} bid={bid} city={city} />
+              ))}
             </div>
           ) : (
             <div className="border rounded-sm p-4">
