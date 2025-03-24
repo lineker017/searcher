@@ -75,6 +75,7 @@ export function BidList() {
               <Select value={filters.city} onValueChange={(value) => setCity(value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
+
                 </SelectTrigger>
                 <SelectContent>
                   {CITIES.map((city) => (
