@@ -1,7 +1,7 @@
 export function Home() {
   return(
-    <div>
-      <h1 className="text-center">Home</h1>
+    <div className="px-16 py-8">
+      <h1 className="text-2xl">Home</h1>
     </div>
   )
 }
