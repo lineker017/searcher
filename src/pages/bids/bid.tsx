@@ -1,4 +1,5 @@
 import type { GetBidsResponse } from "@/http/bids/get-bids"
+import { formatCurrency } from "@/utils/format-currency"
 
 interface BidProps {
   bid: GetBidsResponse
@@ -15,16 +16,16 @@ export function Bid({ bid, city }: BidProps) {
   }
 
   return (
-    <div className="space-y-2">
-      <h1 className="text-2xl cursor-pointer hover:underline">{bid.LICIT} {bid.DATAE}</h1>
+    <div className="space-y-1.5">
+      <h1 className="text-xl cursor-pointer hover:underline">{bid.LICIT} {bid.NUMERO}/{bid.ANO}</h1>
 
-      <div>
+      <div className="space-y-0.5">
         <p>Data de abertura: <span className="text-muted-foreground">{bid.DATAE}</span></p>
         <p>Empresa: <span className="text-muted-foreground">{bid.NOMEEMPRESA}</span></p>
         <p>Municipio: <span className="text-muted-foreground">{city}</span></p>
-        <p>Valor: <span className="text-muted-foreground">{bid.VALOR}</span></p>
+        <p>Valor: <span className="text-muted-foreground">{formatCurrency(bid.VALOR)}</span></p>
         <p>Descrição: <span className="text-muted-foreground">{bid.DISCR}</span></p>
-        <p>Situação: <span className={`${situationStyle[bid.SITUACAO.trim()]}`}>{bid.SITUACAO}</span></p>
+        <p>Situação: <span className={`px-2 py-1 ml-1 rounded-md text-xs font-medium ${situationStyle[bid.SITUACAO.trim().toLocaleLowerCase()] || ""}`}>{bid.SITUACAO}</span></p>
       </div>
     </div>
   )

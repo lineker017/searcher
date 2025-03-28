@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { CITIES } from "./constants"
 import { useFiltersStore } from "@/stores/use-filters-store"
@@ -57,7 +56,7 @@ export function BidList() {
           <LoaderCircle className="animate-spin size-6 text-muted-foreground" />
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-8">
           <form className="grid grid-cols-12 gap-2 items-end">
             <div className="col-span-3">
               <Label>Cidade</Label>
@@ -92,22 +91,16 @@ export function BidList() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="col-span-2">
-              <Label>Valor</Label>
-              <Input
-                placeholder="Filtrar por valor"
-                value={filters.value}
-                onChange={(e) => setFilters({ value: e.target.value })}
-              />
-            </div>
           </form>
 
           {filters.city ? (
-            <div className="space-y-8">
-              {data?.map((bid) => (
-                <Bid key={bid.PROCLICITACAO} bid={bid} city={city} />
-              ))}
+            <div className="space-y-4">
+              <h1 className="text-3xl">Encontradas {data?.length} licitações abertas</h1>
+              <div className="space-y-8">
+                {data?.map((bid) => (
+                  <Bid key={bid.PROCLICITACAO} bid={bid} city={city} />
+                ))}
+              </div>
             </div>
           ) : (
             <div className="border rounded-sm p-4">
