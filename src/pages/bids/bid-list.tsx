@@ -30,15 +30,15 @@ export function BidList() {
     })),
   })
 
-  const bids: (GetBidsResponse & { city: string })[] = response.flatMap((res, i) =>
+  const bids: (GetBidsResponse & { CIDADE: string })[] = response.flatMap((res, i) =>
     res.data?.map((bid) => ({
       ...bid,
-      city: CITIES[i].label,
+      CIDADE: CITIES[i].label,
     })) ?? []
   )
 
   const filteredBids = bids.filter((bid) => {
-    const matchCity = cities.length > 0 ? cities.includes(bid.city) : true
+    const matchCity = cities.length > 0 ? cities.includes(bid.CIDADE) : true
     const matchSituation = situation ? bid.SITUACAO?.trim().toLowerCase() === situation.trim().toLowerCase() : true
     const matchDescription =
       description.trim() === "" ||
@@ -64,7 +64,7 @@ export function BidList() {
 
   return (
     <div>
-      {false ? (
+      {filteredBids.length === 0 ? (
         <div className="w-full flex justify-center py-8">
           <LoaderCircle className="animate-spin size-6 text-muted-foreground" />
         </div>

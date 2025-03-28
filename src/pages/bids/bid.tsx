@@ -3,7 +3,9 @@ import { formatCurrency } from "@/utils/format-currency"
 import { BidInfo } from "./bid-info"
 
 interface BidProps {
-  bid: GetBidsResponse
+  bid: GetBidsResponse & {
+    CIDADE: string
+  }
 }
 
 export function Bid({ bid }: BidProps) {
@@ -35,6 +37,7 @@ export function Bid({ bid }: BidProps) {
 
       <div className="space-y-0.5">
         <p>Data de abertura: <span className="text-muted-foreground text-sm">{bid.DATAE}</span></p>
+        <p>Cidade: <span className="text-muted-foreground text-sm">{bid.CIDADE}</span></p>
         <p>Empresa: <span className="text-muted-foreground text-sm">{bid.NOMEEMPRESA}</span></p>
         <p>Valor: <span className="text-muted-foreground text-sm">{formatCurrency(bid.VALOR)}</span></p>
         <p>Descrição: <span className="text-muted-foreground text-sm">{bid.DISCR}</span></p>
