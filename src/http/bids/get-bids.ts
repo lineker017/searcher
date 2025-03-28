@@ -1,13 +1,8 @@
-import { useFiltersStore } from "@/stores/use-filters-store"
 import ky from "ky"
 
-export interface Filters {
-	year?: string
-	company?: string
-}
-
 export interface GetBidsRequest {
-	filters: Filters
+	city: string
+	query: string
 }
 
 export interface GetBidsResponse {
@@ -47,25 +42,15 @@ export interface GetBidsResponse {
 	DTPROPOSTAFIM: string
 }
 
-export async function getBids() {
-	const { filters } = useFiltersStore.getState();
-
-	const params = new URLSearchParams({
-		Listagem: "Licitacoes",
-		MostraDadosConsolidado: "False",
-	})
-
-	if (filters.company) params.append("Empresa", filters.company)
-	if (filters.year) params.append("Exercicio", filters.year) // API deles não funciona o filtro de ano
-
+export async function getBids({ city, query }: GetBidsRequest) {
 	const api = ky.create({
-		prefixUrl: `/${filters.city}/Transparencia/VersaoJson`,
+		prefixUrl: `/${city}/Transparencia/VersaoJson`,
 		credentials: 'include',
 	});
 
-	const response =
-		await api.get(`LicitacoesEContratos/?${params.toString()}`)
-			.json<GetBidsResponse[]>()
+	const response = await api
+		.get(query)
+		.json<GetBidsResponse[]>()
 
 	return response
 }

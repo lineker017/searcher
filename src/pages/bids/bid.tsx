@@ -3,10 +3,9 @@ import { formatCurrency } from "@/utils/format-currency"
 
 interface BidProps {
   bid: GetBidsResponse
-  city?: string
 }
 
-export function Bid({ bid, city }: BidProps) {
+export function Bid({ bid }: BidProps) {
   const situationStyle: Record<string, string> = {
     'em andamento': "bg-yellow-300 text-yellow-800",
     homologada: "bg-green-300 text-green-800",
@@ -17,14 +16,22 @@ export function Bid({ bid, city }: BidProps) {
 
   return (
     <div className="space-y-1.5">
-      <h1 className="text-xl cursor-pointer hover:underline">{bid.LICIT} {bid.NUMERO}/{bid.ANO}</h1>
+      <h1 className="text-lg cursor-pointer hover:underline">
+        <a
+          href="http://45.172.145.250:8079/comprasedital"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:underline cursor-pointer"
+        >
+          {bid.LICIT} {bid.NUMERO}/{bid.ANO}
+        </a>  
+      </h1>
 
       <div className="space-y-0.5">
-        <p>Data de abertura: <span className="text-muted-foreground">{bid.DATAE}</span></p>
-        <p>Empresa: <span className="text-muted-foreground">{bid.NOMEEMPRESA}</span></p>
-        <p>Municipio: <span className="text-muted-foreground">{city}</span></p>
-        <p>Valor: <span className="text-muted-foreground">{formatCurrency(bid.VALOR)}</span></p>
-        <p>Descrição: <span className="text-muted-foreground">{bid.DISCR}</span></p>
+        <p>Data de abertura: <span className="text-muted-foreground text-sm">{bid.DATAE}</span></p>
+        <p>Empresa: <span className="text-muted-foreground text-sm">{bid.NOMEEMPRESA}</span></p>
+        <p>Valor: <span className="text-muted-foreground text-sm">{formatCurrency(bid.VALOR)}</span></p>
+        <p>Descrição: <span className="text-muted-foreground text-sm">{bid.DISCR}</span></p>
         <p>Situação: <span className={`px-2 py-1 ml-1 rounded-md text-xs font-medium ${situationStyle[bid.SITUACAO.trim().toLocaleLowerCase()] || ""}`}>{bid.SITUACAO}</span></p>
       </div>
     </div>

@@ -1,5 +1,5 @@
-import { getBids } from "@/http/bids/get-bids"
-import { useQuery } from "@tanstack/react-query"
+import { getBids, type GetBidsResponse } from "@/http/bids/get-bids"
+import { useQueries } from "@tanstack/react-query"
 import { LoaderCircle } from "lucide-react"
 import {
   Select,
@@ -10,80 +10,127 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { CITIES } from "./constants"
-import { useFiltersStore } from "@/stores/use-filters-store"
-import { useNavigate, useSearchParams } from "react-router-dom"
-import { useEffect } from "react"
 import { Bid } from "./bid"
+import { useState } from "react"
+import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Button } from "@/components/ui/button"
 
 export function BidList() {
-  const { filters, setFilters, setCity } = useFiltersStore()
-  const [searchParams, _] = useSearchParams()
-  const navigate = useNavigate()
+  const [cities, setCities] = useState<string[]>([])
+  const [description, setDescription] = useState<string>("")
+  const [situation, setSituation] = useState<string>("em andamento")
 
-  useEffect(() => {
-    const city = searchParams.get("city") || ""
-    const year = searchParams.get("year") || ""
-    const name = searchParams.get("name") || ""
-    const situation = searchParams.get("situation") || ""
-    const value = searchParams.get("value") || ""
-
-    setFilters({ year, name, situation, value, city })
-  }, [])
-
-  useEffect(() => {
-    const params = new URLSearchParams()
-
-    if (filters.city) params.set("city", filters.city)
-    if (filters.year) params.set("year", filters.year)
-    if (filters.name) params.set("name", filters.name)
-    if (filters.situation) params.set("situation", filters.situation)
-    if (filters.value) params.set("value", filters.value)
-
-    navigate(`?${params.toString()}`, { replace: true })
-  }, [filters])
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['bids', filters.company, filters.year],
-    queryFn: () => getBids(),
-    enabled: !!filters.city
+  const response = useQueries({
+    queries: CITIES.map(({ city, query }) => ({
+      queryKey: ["bids", city],
+      queryFn: () => getBids({ city, query }),
+      staleTime: 1000 * 60 * 5 // Tempo em que o cache é guardado,
+    })),
   })
 
-  const city = CITIES.find((city) => city.value === filters.city)?.label
+  const bids: (GetBidsResponse & { city: string })[] = response.flatMap((res, i) =>
+    res.data?.map((bid) => ({
+      ...bid,
+      city: CITIES[i].label,
+    })) ?? []
+  )
+
+  const filteredBids = bids.filter((bid) => {    
+    const matchCity = cities.length > 0 ? cities.includes(bid.city) : true
+    const matchSituation = situation ? bid.SITUACAO?.trim().toLowerCase() === situation.trim().toLowerCase() : true
+    const matchDescription =
+      description.trim() === "" ||
+      bid.DISCR?.toLowerCase().includes(description.toLowerCase()) ||
+      bid.DISCR?.toLowerCase().includes(description.toLowerCase())
+
+    return matchCity && matchSituation && matchDescription
+  })
+
+  const title = (() => {
+    const countBids = filteredBids.length
+
+    const concatCities = (cities: string[]) => {
+      if (cities.length === 1) return cities[0]
+      return `${cities.slice(0, -1).join(', ')} e ${cities[cities.length - 1]}`
+    }
+
+    const cityText = cities && cities.length > 0 ? ` em ${concatCities(cities)}` : ""
+    const situationText = situation ? ` ${situation}` : ""
+
+    return `Encontradas ${countBids} ${countBids === 1 ? "licitação" : "licitações"}${situationText}${cityText}`
+  })()
+
   return (
     <div>
-      {isLoading ? (
+      {false ? (
         <div className="w-full flex justify-center py-8">
           <LoaderCircle className="animate-spin size-6 text-muted-foreground" />
         </div>
       ) : (
         <div className="space-y-8">
           <form className="grid grid-cols-12 gap-2 items-end">
-            <div className="col-span-3">
-              <Label>Cidade</Label>
-              <Select value={filters.city} onValueChange={(value) => setCity(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
+            <div className="col-span-3 space-y-0.5">
+              <Label className="text-base font-normal">Cidades</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start font-normal"
+                  >
+                    {cities.length > 0
+                      ? `Cidades selecionadas (${cities.length})`
+                      : "Selecione uma ou mais cidades"}
+                  </Button>
+                </PopoverTrigger>
 
-                </SelectTrigger>
-                <SelectContent>
-                  {CITIES.map((city) => (
-                    <SelectItem key={city.value} value={city.value}>{city.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <PopoverContent className="min-w-[--radix-popover-trigger-width] max-h-[400px] overflow-y-auto">
+                  <div className="space-y-3">
+                    {CITIES.map(({ city: value, label }) => (
+                      <div
+                        key={value}
+                        className="flex items-center space-x-2"
+                      >
+                        <Checkbox
+                          id={value}
+                          checked={cities.includes(label)}
+                          onCheckedChange={(checked) => {
+                            setCities((prev) =>
+                              checked
+                                ? [...prev, label]
+                                : prev.filter((c) => c !== label)
+                            )
+                          }}
+                        />
+
+                        <Label htmlFor={value} className="text-sm font-normal cursor-pointer">
+                          {label}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
 
-            <div className="col-span-2">
-              <Label>Situação</Label>
-              <Select
-                value={filters.situation}
-                onValueChange={(value) => setFilters({ situation: value })}
-              >
+            <div className="col-span-6 space-y-0.5">
+              <Label className="text-base font-normal">Descrição</Label>
+              <Input 
+                placeholder="Digite uma descrição"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+
+            <div className="col-span-3 space-y-0.5">
+              <Label className="text-base font-normal">Situação</Label>
+              <Select defaultValue="em andamento" onValueChange={(value) => setSituation(value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="emAndamento">Em andamento</SelectItem>
+                  <SelectItem value="em andamento">Em andamento</SelectItem>
                   <SelectItem value="homologada">Homologada</SelectItem>
                   <SelectItem value="revogada">Revogada</SelectItem>
                   <SelectItem value="classificada">Classificada</SelectItem>
@@ -93,20 +140,18 @@ export function BidList() {
             </div>
           </form>
 
-          {filters.city ? (
-            <div className="space-y-4">
-              <h1 className="text-3xl">Encontradas {data?.length} licitações abertas</h1>
-              <div className="space-y-8">
-                {data?.map((bid) => (
-                  <Bid key={bid.PROCLICITACAO} bid={bid} city={city} />
-                ))}
-              </div>
+          <div className="space-y-4">
+            <h1 className="text-2xl font-semibold">
+              {title}
+            </h1>
+
+            <div className="space-y-8">
+              {filteredBids?.map((bid) => (
+                <Bid key={bid.NLICITACAO} bid={bid} />
+              ))}
             </div>
-          ) : (
-            <div className="border rounded-sm p-4">
-              <p className="text-sm text-muted-foreground text-center">Selecione uma <strong>cidade</strong> para buscar as licitações</p>
-            </div>
-          )}
+          </div>
+
         </div >
       )}
     </div >
