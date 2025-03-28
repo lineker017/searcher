@@ -37,7 +37,7 @@ export function BidList() {
     })) ?? []
   )
 
-  const filteredBids = bids.filter((bid) => {    
+  const filteredBids = bids.filter((bid) => {
     const matchCity = cities.length > 0 ? cities.includes(bid.city) : true
     const matchSituation = situation ? bid.SITUACAO?.trim().toLowerCase() === situation.trim().toLowerCase() : true
     const matchDescription =
@@ -116,7 +116,7 @@ export function BidList() {
 
             <div className="col-span-6 space-y-0.5">
               <Label className="text-base font-normal">Descrição</Label>
-              <Input 
+              <Input
                 placeholder="Digite uma descrição"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
