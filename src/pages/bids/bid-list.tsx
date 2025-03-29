@@ -63,96 +63,93 @@ export function BidList() {
   })()
 
   return (
-    <div>
+    <div className="space-y-8">
+      <form className="grid grid-cols-12 gap-2 items-end">
+        <div className="col-span-3 space-y-0.5">
+          <Label className="text-base font-normal">Cidades</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-start font-normal"
+              >
+                {cities.length > 0
+                  ? `Cidades selecionadas (${cities.length})`
+                  : "Selecione uma ou mais cidades"}
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent className="min-w-[--radix-popover-trigger-width] max-h-[400px] overflow-y-auto">
+              <div className="space-y-3">
+                {CITIES.map(({ city: value, label }) => (
+                  <div
+                    key={value}
+                    className="flex items-center space-x-2"
+                  >
+                    <Checkbox
+                      id={value}
+                      checked={cities.includes(label)}
+                      onCheckedChange={(checked) => {
+                        setCities((prev) =>
+                          checked
+                            ? [...prev, label]
+                            : prev.filter((c) => c !== label)
+                        )
+                      }}
+                    />
+
+                    <Label htmlFor={value} className="text-sm font-normal cursor-pointer">
+                      {label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <div className="col-span-6 space-y-0.5">
+          <Label className="text-base font-normal">Descrição</Label>
+          <Input
+            placeholder="Digite uma descrição"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+
+        <div className="col-span-3 space-y-0.5">
+          <Label className="text-base font-normal">Situação</Label>
+          <Select defaultValue="em andamento" onValueChange={(value) => setSituation(value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="em andamento">Em andamento</SelectItem>
+              <SelectItem value="homologada">Homologada</SelectItem>
+              <SelectItem value="revogada">Revogada</SelectItem>
+              <SelectItem value="classificada">Classificada</SelectItem>
+              <SelectItem value="encerrada">Encerrada</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </form>
       {filteredBids.length === 0 ? (
         <div className="w-full flex justify-center py-8">
           <LoaderCircle className="animate-spin size-6 text-muted-foreground" />
         </div>
       ) : (
-        <div className="space-y-8">
-          <form className="grid grid-cols-12 gap-2 items-end">
-            <div className="col-span-3 space-y-0.5">
-              <Label className="text-base font-normal">Cidades</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start font-normal"
-                  >
-                    {cities.length > 0
-                      ? `Cidades selecionadas (${cities.length})`
-                      : "Selecione uma ou mais cidades"}
-                  </Button>
-                </PopoverTrigger>
+        <div className="space-y-4">
+          <h1 className="text-2xl font-semibold">
+            {title}
+          </h1>
 
-                <PopoverContent className="min-w-[--radix-popover-trigger-width] max-h-[400px] overflow-y-auto">
-                  <div className="space-y-3">
-                    {CITIES.map(({ city: value, label }) => (
-                      <div
-                        key={value}
-                        className="flex items-center space-x-2"
-                      >
-                        <Checkbox
-                          id={value}
-                          checked={cities.includes(label)}
-                          onCheckedChange={(checked) => {
-                            setCities((prev) =>
-                              checked
-                                ? [...prev, label]
-                                : prev.filter((c) => c !== label)
-                            )
-                          }}
-                        />
-
-                        <Label htmlFor={value} className="text-sm font-normal cursor-pointer">
-                          {label}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div className="col-span-6 space-y-0.5">
-              <Label className="text-base font-normal">Descrição</Label>
-              <Input
-                placeholder="Digite uma descrição"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
-
-            <div className="col-span-3 space-y-0.5">
-              <Label className="text-base font-normal">Situação</Label>
-              <Select defaultValue="em andamento" onValueChange={(value) => setSituation(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="em andamento">Em andamento</SelectItem>
-                  <SelectItem value="homologada">Homologada</SelectItem>
-                  <SelectItem value="revogada">Revogada</SelectItem>
-                  <SelectItem value="classificada">Classificada</SelectItem>
-                  <SelectItem value="encerrada">Encerrada</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </form>
-
-          <div className="space-y-4">
-            <h1 className="text-2xl font-semibold">
-              {title}
-            </h1>
-
-            <div className="space-y-8">
-              {filteredBids?.map((bid) => (
-                <Bid key={bid.NLICITACAO} bid={bid} />
-              ))}
-            </div>
+          <div className="space-y-8">
+            {filteredBids?.map((bid) => (
+              <Bid key={bid.NLICITACAO} bid={bid} />
+            ))}
           </div>
+        </div>
 
-        </div >
       )}
     </div >
   )
