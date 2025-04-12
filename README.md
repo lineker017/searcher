@@ -10,3 +10,8 @@
 
 - Execute `npm run dev`
 - Abra no navegador `http://localhost:5173`
+
+
+
+Abrir o porta, está vindo todas com a cidade de jaborandi
+

@@ -13,6 +13,7 @@ import { Eye } from "lucide-react"
 interface BidInfoProps {
   bid: GetBidsResponse & {
     CIDADE: string
+    DOMAIN: string
   }
 }
 
@@ -29,7 +30,7 @@ export function BidInfo({ bid }: BidInfoProps) {
         <DialogHeader>
           <DialogTitle>
             <a
-              href="http://45.172.145.250:8079/comprasedital"
+              href={`${bid.DOMAIN}/comprasedital`}
               target="_blank"
               rel="noopener noreferrer"
               className="hover:underline cursor-pointer"

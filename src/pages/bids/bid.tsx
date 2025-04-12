@@ -5,6 +5,7 @@ import { BidInfo } from "./bid-info"
 interface BidProps {
   bid: GetBidsResponse & {
     CIDADE: string
+    DOMAIN: string
   }
 }
 
@@ -23,7 +24,7 @@ export function Bid({ bid }: BidProps) {
       <div className="flex items-center gap-2">
         <h1 className="text-lg cursor-pointer hover:underline">
           <a
-            href="http://45.172.145.250:8079/comprasedital"
+            href={`${bid.DOMAIN}/comprasedital`}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:underline cursor-pointer"
