@@ -28,7 +28,8 @@ export function BidList() {
   const [description, setDescription] = useState<string>("")
   const [situation, setSituation] = useState<string>("em andamento")
 
-  const [queryStates, setQueryStates] = useState<{ label: string, loading: boolean, error: Error | null }[]>([])
+  const [queryStates, setQueryStates] =
+    useState<{ label: string, domain: string, loading: boolean, error: Error | null }[]>([])
 
   const selectCities = useMemo(() => {
     return cities
@@ -41,13 +42,14 @@ export function BidList() {
       queryKey: ['bids', city],
       queryFn: () => getBids({ city, query }),
       staleTime: 1000 * 60 * 5,
-      retry: 5
+      retry: 1
     }))
   })
 
   useEffect(() => {
     const states = response.map((res, i) => {
-      const label = selectCities[i]?.label
+      const label = CITIES[i]?.label
+      const domain = `${CITIES[i]?.domain}/Transparencia/VersaoJson/${CITIES[i].query}`
 
       let loading = false
       let error: Error | null = null
@@ -55,8 +57,13 @@ export function BidList() {
       if (res.isLoading) loading = true
       else if (res.isError) error = res.error as Error
 
-      return label ? { label, loading, error } : null
-    }).filter((e): e is { label: string, loading: boolean, error: Error | null } => e !== null)
+      return label ? { label, domain, loading, error } : null
+    }).filter((e): e is {
+      label: string,
+      domain: string,
+      loading: boolean,
+      error: Error | null
+    } => e !== null)
 
     const isEqual = JSON.stringify(states) === JSON.stringify(queryStates)
 
@@ -90,23 +97,25 @@ export function BidList() {
       return citiesToConcat.map((city, index) => {
         const prefix = index > 0 ? (index === citiesToConcat.length - 1 ? ' e ' : ', ') : ''
 
-        let className = 'text-xs '
+        let className = 'text-xs hover:underline cursor-pointer '
         const cityState = queryStates.find(state => state.label === city)
         const hasError = errorCities.has(city)
         const isLoading = loadingCities.has(city)
         const errorMessage = cityState?.error?.message
+        const domain = cityState?.domain
 
         if (isLoading) className += 'animate-pulse duration-1000 text-muted-foreground'
-        else if (hasError) className += 'text-red-500 hover:underline cursor-pointer'
+        else if (hasError) className += 'text-red-500'
         else className += 'text-muted-foreground'
 
-        const spanProps = {
+        const aProps = {
           key: city,
+          href: domain,
           className: className,
           ...(hasError && errorMessage ? { title: errorMessage } : {})
         };
 
-        const span = <span {...spanProps}>{city}</span>
+        const span = <a target="_blank" {...aProps}>{city}</a>
 
         return <Fragment key={city}>{prefix}{span}</Fragment>
       });
