@@ -42,7 +42,7 @@ export function BidList() {
       queryKey: ['bids', city],
       queryFn: () => getBids({ city, query }),
       staleTime: 1000 * 60 * 5,
-      retry: 1
+      retry: 5
     }))
   })
 
@@ -115,9 +115,9 @@ export function BidList() {
           ...(hasError && errorMessage ? { title: errorMessage } : {})
         };
 
-        const span = <a target="_blank" {...aProps}>{city}</a>
+        const a = <a target="_blank" {...aProps}>{city}</a>
 
-        return <Fragment key={city}>{prefix}{span}</Fragment>
+        return <Fragment key={city}>{prefix}{a}</Fragment>
       });
     };
 
