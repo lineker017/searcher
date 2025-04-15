@@ -78,16 +78,33 @@ export function BidList() {
     })) ?? []
   )
 
-  const filteredBids = bids.filter((bid) => {
-    const matchCity = cities.length > 0 ? cities.includes(bid.CIDADE) : true
-    const matchSituation = situation ? bid.SITUACAO?.trim().toLowerCase() === situation.trim().toLowerCase() : true
-    const matchDescription =
-      description.trim() === "" ||
-      bid.DISCR?.toLowerCase().includes(description.toLowerCase()) ||
-      bid.DISCR?.toLowerCase().includes(description.toLowerCase())
+  const filteredBids = useMemo(() => {
+    const filtered = bids.filter((bid) => {
+      const matchCity = cities.length > 0 ? cities.includes(bid.CIDADE) : true
+      const matchSituation = situation
+        ? bid.SITUACAO?.trim().toLowerCase() === situation.trim().toLowerCase()
+        : true
+      const matchDescription =
+        description.trim() === "" ||
+        bid.DISCR?.toLowerCase().includes(description.toLowerCase())
 
-    return matchCity && matchSituation && matchDescription
-  })
+      return matchCity && matchSituation && matchDescription
+    })
+
+    const groupWithProposalDate = filtered
+      .filter(b => b.DTPROPOSTAFIM)
+      .sort((a, b) => new Date(b.DTPROPOSTAFIM!).getTime() - new Date(a.DTPROPOSTAFIM!).getTime())
+
+    const groupWithEncDate = filtered
+      .filter(b => !b.DTPROPOSTAFIM && b.DTENC)
+      .sort((a, b) => new Date(b.DTENC!).getTime() - new Date(a.DTENC!).getTime())
+
+    const groupWithoutDates = filtered.filter(b => !b.DTPROPOSTAFIM && !b.DTENC)
+
+    return [...groupWithProposalDate, ...groupWithEncDate, ...groupWithoutDates]
+  }, [bids, cities, situation, description])
+
+
 
   const errorCities = new Set(queryStates.filter(state => state.error).map(state => state.label))
   const loadingCities = new Set(queryStates.filter(state => state.loading).map(state => state.label))
@@ -217,6 +234,7 @@ export function BidList() {
           </Select>
         </div>
       </form>
+
       {paginatedBids.length === 0 ? (
         <div className="w-full flex justify-center py-8">
           <p className="text-muted-foreground text-sm">Nenhuma licitação encontrada.</p>
